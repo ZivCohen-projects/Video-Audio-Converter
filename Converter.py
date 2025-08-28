@@ -9,20 +9,29 @@ def convert_video_to_mp3(input_file, output_file):
         "-ab", "192k",
         "-ar", "44100",
         "-y",
-        output_file ]
-        
+        output_file
+    ]
+    
     try:
-        subprocess.run(ffmpeg_cmd, check = True)
+        subprocess.run(ffmpeg_cmd, check=True)
         print("Successfully Converted!")
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         print("Conversion failed")
-        
-def main():
-    filename = input("What is the name of your file?")
-    if filename.endswith(".mov") or filename.endswith(".mp4"):
-        convert_video_to_mp3(filename, f"audio_{filename}.mp3")
-    else:
-        print("File is not audio")
-        
-main()
 
+def main():
+    filepath = input("Drag and drop your video file here: ").strip()
+    
+    if filepath.startswith("& "):
+        filepath = filepath[2:]
+    filepath = filepath.strip('"').strip("'")
+    
+    if filepath.lower().endswith((".mov", ".mp4")):
+        filename = filepath.replace("\\", "/").split("/")[-1]
+        name_without_ext = ".".join(filename.split(".")[:-1])
+        output_file = f"audio_{name_without_ext}.mp3"
+        
+        convert_video_to_mp3(filepath, output_file)
+    else:
+        print("File is not a supported video")
+
+main()
